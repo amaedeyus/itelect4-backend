@@ -10,11 +10,11 @@ router.use(auth);
 
 // GET /api/lost-found-items
 // List only the current user's reported items.
-router.get("/", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
 try {
-const items = await LostFoundItem.find({
-reporterId: req.userId,
-}).sort({ createdAt: -1 });
+const items = await LostFoundItem.find().sort({
+  createdAt: -1,
+});
 
 res.status(200).json(items);
 
@@ -35,10 +35,7 @@ if (!mongoose.isValidObjectId(id)) {
   return;
 }
 
-const item = await LostFoundItem.findOne({
-  _id: id,
-  reporterId: req.userId,
-});
+const item = await LostFoundItem.findById(id);
 
 if (!item) {
   res.status(404).json({ message: "Item not found." });
@@ -55,7 +52,7 @@ res.status(500).json({ message: "Unable to retrieve item." });
 
 // POST /api/lost-found-items
 // Create an item owned by the authenticated user.
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", auth, async (req: Request, res: Response) => {
 try {
 const { title, description, type } = req.body;
 
@@ -99,7 +96,7 @@ res.status(500).json({ message: "Unable to create item." });
 
 // PATCH /api/lost-found-items/:id
 // Update only the current user's item.
-router.patch("/:id", async (req: Request, res: Response) => {
+router.patch("/:id", auth, async (req: Request, res: Response) => {
 try {
 const { id } = req.params;
 
@@ -183,7 +180,7 @@ res.status(500).json({ message: "Unable to update item." });
 
 // DELETE /api/lost-found-items/:id
 // Delete only the current user's item.
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", auth, async (req: Request, res: Response) => {
 try {
 const { id } = req.params;
 
