@@ -12,6 +12,8 @@ import connectDB from "./config/db";
 import authRoutes from "./routes/auth";
 import lostFoundItemsRoutes from "./routes/lostFoundItems";
 
+import aiRoutes from "./routes/ai";
+
 const app = express();
 
 const allowedOrigins = (
@@ -62,6 +64,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // Application routes
 app.use("/api/auth", authRoutes);
 app.use("/api/lost-found-items", lostFoundItemsRoutes);
+app.use("/api/ai", aiRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
