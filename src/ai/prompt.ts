@@ -1,7 +1,7 @@
 
 import type { AiReply } from "../schemas/aiReview";
 
-export const MODEL = "gemini-2.5-flash";
+export const MODEL = "gemini-3.8-flash";
 
 export const SYSTEM_PROMPT = `
 You are the AI Report Review assistant for Campus Lost & Found,
