@@ -1,3 +1,4 @@
+
 import "dotenv/config";
 
 import express, {
@@ -11,27 +12,37 @@ import mongoose from "mongoose";
 import connectDB from "./config/db";
 import authRoutes from "./routes/auth";
 import lostFoundItemsRoutes from "./routes/lostFoundItems";
-
 import aiRoutes from "./routes/ai";
 
 const app = express();
 
-const allowedOrigins = (
-  process.env.CORS_ORIGIN ?? "http://localhost:5173"
-)
+// Allow the deployed frontend and local development frontend.
+// Additional origins can be configured through CORS_ORIGIN.
+const configuredOrigins = (process.env.CORS_ORIGIN ?? "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://itelect4-project-wine.vercel.app",
+  ...configuredOrigins,
+].filter((origin, index, origins) => origins.indexOf(origin) === index);
+
+// CORS must run before the API routes and database middleware.
+// This also handles browser OPTIONS preflight requests.
 app.use(
   cors({
     origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
   })
 );
 
 app.use(express.json());
 
-// Connect to MongoDB before handling each request.
+// Connect to MongoDB before handling application requests.
 // Reuse an existing connection when one is already available.
 app.use(async (_req, res, next) => {
   try {
